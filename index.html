@@ -9,8 +9,7 @@
 <style>
 .mySlides {display:none;}
 .container img {
-  min-width: 100%;
-  width: auto;
+  width: 100%;
   height: 100%;
 }
 </style>
@@ -23,7 +22,7 @@
 <script>
 var myIndex = 0;
 var container = document.getElementsByClassName("container")[0];
-for (let i = 1; i < 51; i++) {
+for (let i = 1; i < 451; i++) {
   var img = document.createElement("img");
   var j = i;
   if (i < 10) {
@@ -37,21 +36,16 @@ for (let i = 1; i < 51; i++) {
   img.classList = "mySlides";
   container.appendChild(img);
 }
-carousel();
+carousel(1, Math.floor(Math.random() * 450) + 1)
 
-function carousel() {
+function carousel(old, newPhoto) {
   var i;
   var x = document.getElementsByClassName("mySlides");
-  for (i = 0; i < x.length; i++) {
-    x[i].style.display = "none";  
-  }
-  myIndex++;
-  if (myIndex > x.length) {myIndex = 1}   
-  console.log('myIndex', myIndex);
-  if (x[myIndex-1])  {
-    x[myIndex-1].style.display = "block";  
-  }
-  setTimeout(carousel, 2000); // Change image every 2 seconds
+  x[old].style.display = "none";
+  x[newPhoto].style.display = "block";  
+  setTimeout(function() {
+    carousel(newPhoto, Math.floor(Math.random() * 450) + 1);
+  }, 3000); // Change image every 2 seconds
 }
 </script>
 
