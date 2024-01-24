@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css?family=DM+Sans:400,500,700&display=swap");
+
+      * {
+        box-sizing: border-box;
+        outline: 0;
+      }
+
+      :root {
+        --font: "DM Sans", sans-serif;
+      }
+
+      body {
+        background-image: linear-gradient(
+          102.7deg,
+          rgba(253, 218, 255, 1) 8.2%,
+          rgba(223, 173, 252, 1) 19.6%,
+          rgba(173, 205, 252, 1) 36.8%,
+          rgba(173, 252, 244, 1) 73.2%,
+          rgba(202, 248, 208, 1) 90.9%
+        );
+        background-attachment: fixed;
+        display: flex;
+        flex-direction: row;
+        background-repeat: no-repeat;
+        background-size: cover;
+        padding: 20px;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .app {
+        max-width: 400px;
+        width: 100%;
+        margin: auto;
+        background-color: #fff;
+        font-family: var(--font);
+        border-radius: 16px;
+        font-size: 15px;
+        overflow: hidden;
+        color: #455963;
+        box-shadow: 0 20px 80px rgba(0, 0, 0, 0.3);
+        view-transition-name: app;
+      }
+
+      .task-list {
+        max-height: 60vh;
+        overflow: auto;
+      }
+
+      .task-status {
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        border: 2px solid #bbbdc7;
+        border-radius: 50%;
+        background-color: #fff;
+        margin-right: 10px;
+        position: relative;
+      }
+
+      .task-status:checked {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='405.272' height='405.272'%3e%3cpath d='M393.401 124.425L179.603 338.208c-15.832 15.835-41.514 15.835-57.361 0L11.878 227.836c-15.838-15.835-15.838-41.52 0-57.358 15.841-15.841 41.521-15.841 57.355-.006l81.698 81.699L336.037 67.064c15.841-15.841 41.523-15.829 57.358 0 15.835 15.838 15.835 41.514.006 57.361z' fill='%23fff'/%3e%3c/svg%3e");
+        background-size: 10px;
+        background-color: #4acea3;
+        border-color: #38bb90;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
+
+      .task-delete {
+        margin-left: 10px;
+      }
+
+      .task-item {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 12px 20px;
+      }
+
+      .task-item + .task-item {
+        border-top: 1px solid #eef0f5;
+      }
+
+      .task-item:hover {
+        background-color: #f6fbff;
+      }
+
+      .task-name {
+        margin-right: auto;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .task-item.is-completed > .task-name {
+        text-decoration: line-through wavy rgba(0, 0, 0, 0.3);
+      }
+
+      .task-item.is-completed {
+        background-color: rgba(74, 206, 163, 0.1);
+      }
+
+      .task-header-title {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 600;
+        padding: 20px 20px 6px 20px;
+      }
+
+      .task-tools {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        padding: 0 20px;
+      }
+
+      .task-filter {
+        border: 0;
+        padding: 3px 8px;
+        background: 0;
+        font-size: 14px;
+        line-height: 1;
+        cursor: pointer;
+        font-family: var(--font);
+        color: #8a9ca5;
+        border-radius: 20px;
+      }
+
+      .task-filter.is-active {
+        background-color: #7996a5;
+        color: #fff;
+      }
+
+      .task-count {
+        color: #8a9ca5;
+        font-size: 14px;
+      }
+
+      .task-form {
+        display: flex;
+        margin-top: 10px;
+      }
+
+      .task-input {
+        flex: 1;
+        font-size: 16px;
+        font-family: var(--font);
+        padding: 10px 20px;
+        border: 0;
+        box-shadow: 0 -1px 0 #e2e4ea inset;
+        color: #455963;
+      }
+
+      .task-input::placeholder {
+        color: #a8b5bb;
+      }
+
+      .task-input:focus {
+        box-shadow: 0 -1px 0 #bdcdd6 inset;
+      }
+
+      .task-button {
+        display: none;
+      }
+
+      .task-delete {
+        border: 0;
+        width: 18px;
+        height: 18px;
+        padding: 0;
+        overflow: hidden;
+        background-color: transparent;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg fill='%23dc4771' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 174.239 174.239'%3e%3cpath d='M87.12 0C39.082 0 0 39.082 0 87.12s39.082 87.12 87.12 87.12 87.12-39.082 87.12-87.12S135.157 0 87.12 0zm0 159.305c-39.802 0-72.185-32.383-72.185-72.185S47.318 14.935 87.12 14.935s72.185 32.383 72.185 72.185-32.384 72.185-72.185 72.185z'/%3e%3cpath d='M120.83 53.414c-2.917-2.917-7.647-2.917-10.559 0L87.12 76.568 63.969 53.414c-2.917-2.917-7.642-2.917-10.559 0s-2.917 7.642 0 10.559l23.151 23.153-23.152 23.154a7.464 7.464 0 000 10.559 7.445 7.445 0 005.28 2.188 7.437 7.437 0 005.28-2.188L87.12 97.686l23.151 23.153a7.445 7.445 0 005.28 2.188 7.442 7.442 0 005.28-2.188 7.464 7.464 0 000-10.559L97.679 87.127l23.151-23.153a7.465 7.465 0 000-10.56z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-size: cover;
+        cursor: pointer;
+        display: none;
+      }
+
+      .task-item:hover > .task-delete {
+        display: block;
+      }
+
+      .task-empty {
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg fill='%23f4f4f4' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 486.463 486.463'%3e%3cpath d='M243.225 333.382c-13.6 0-25 11.4-25 25s11.4 25 25 25c13.1 0 25-11.4 24.4-24.4.6-14.3-10.7-25.6-24.4-25.6z'/%3e%3cpath d='M474.625 421.982c15.7-27.1 15.8-59.4.2-86.4l-156.6-271.2c-15.5-27.3-43.5-43.5-74.9-43.5s-59.4 16.3-74.9 43.4l-156.8 271.5c-15.6 27.3-15.5 59.8.3 86.9 15.6 26.8 43.5 42.9 74.7 42.9h312.8c31.3 0 59.4-16.3 75.2-43.6zm-34-19.6c-8.7 15-24.1 23.9-41.3 23.9h-312.8c-17 0-32.3-8.7-40.8-23.4-8.6-14.9-8.7-32.7-.1-47.7l156.8-271.4c8.5-14.9 23.7-23.7 40.9-23.7 17.1 0 32.4 8.9 40.9 23.8l156.7 271.4c8.4 14.6 8.3 32.2-.3 47.1z'/%3e%3cpath d='M237.025 157.882c-11.9 3.4-19.3 14.2-19.3 27.3.6 7.9 1.1 15.9 1.7 23.8 1.7 30.1 3.4 59.6 5.1 89.7.6 10.2 8.5 17.6 18.7 17.6s18.2-7.9 18.7-18.2c0-6.2 0-11.9.6-18.2 1.1-19.3 2.3-38.6 3.4-57.9.6-12.5 1.7-25 2.3-37.5 0-4.5-.6-8.5-2.3-12.5-5.1-11.2-17-16.9-28.9-14.1z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: center;
+        font-weight: 500;
+        font-size: 18px;
+        background-size: 80px;
+      }
+
+      @media (max-width: 600px) {
+        .task-delete {
+          display: block;
+        }
+      }
+    </style>
+    <script>
+      class Todo {
+        constructor({
+          title = "Todo App",
+          data = [],
+          onAdded = () => {},
+          onDeleted = () => {},
+          onStatusChanged = () => {},
+        } = {}) {
+          this.nodes = {};
+          this.title = title;
+          this.data = data;
+          this.filteredData = data;
+          this.count = data.length;
+          this.addTask = this.addTask.bind(this);
+          this.deleteTask = this.deleteTask.bind(this);
+          this.toggleStatus = this.toggleStatus.bind(this);
+          this.filterData = this.filterData.bind(this);
+          this.onAdded = onAdded;
+          this.onDeleted = onDeleted;
+          this.onStatusChanged = onStatusChanged;
+
+          this.filterTypes = [
+            {
+              name: "All",
+              queryParam: null,
+              queryValue: null,
+              active: true,
+            },
+            {
+              name: "Active",
+              queryParam: "completed",
+              queryValue: false,
+              active: false,
+            },
+            {
+              name: "Completed",
+              queryParam: "completed",
+              queryValue: true,
+              active: false,
+            },
+          ];
+
+          this.elementDefaults = {
+            type: "div",
+            markup: "",
+            container: document.body,
+            attributes: {},
+            events: {},
+          };
+        }
+
+        elementCreator(options) {
+          const config = { ...this.elementDefaults, ...options };
+          const elementNode = document.createElement(config.type);
+
+          Object.keys(config.attributes).forEach((a) => {
+            config.attributes[a] !== null &&
+              elementNode.setAttribute(a, config.attributes[a]);
+          });
+
+          elementNode.innerHTML = config.markup;
+          config.container.append(elementNode);
+
+          Object.keys(config.events).forEach((e) => {
+            this.eventBinder(
+              elementNode,
+              e,
+              config.events[e].action,
+              config.events[e].api
+            );
+          });
+
+          return elementNode;
+        }
+
+        updateCount() {
+          this.count = this.data.length;
+          this.nodes.count.innerHTML =
+            this.count > 1 ? `${this.count} tasks` : `${this.count} task`;
+        }
+
+        eventBinder(el, event, action, api = false) {
+          el.addEventListener(event, (e) => {
+            api ? action(e) : action();
+          });
+        }
+
+        emptyListUI(message = "Not found a task") {
+          this.nodes.list.innerHTML = "";
+          this.nodes.emptyList = this.elementCreator({
+            markup: message,
+            attributes: {
+              class: "task-empty",
+            },
+            container: this.nodes.list,
+          });
+        }
+
+        addTask({
+          id = new Date().getUTCMilliseconds(),
+          name = `New task #${new Date().getUTCMilliseconds()}`,
+          completed = false,
+        } = {}) {
+          const inputValue = this.nodes.input.value.trim();
+          const taskName = inputValue.length > 0 ? inputValue : name;
+          const newTask = { id, name: taskName, completed };
+
+          this.nodes.input.value = "";
+          this.data.push(newTask);
+          this.listUI(this.data);
+          this.onAdded(newTask);
+          this.updateCount();
+          this.filterData();
+        }
+
+        filterData(e, param = null, value = null) {
+          const attrParam = e ? e.target.getAttribute("data-param") : null;
+          const attrValue = e ? e.target.getAttribute("data-value") : null;
+
+          const queryParam = param ? param : attrParam;
+          const queryValue = value ? value : attrValue;
+
+          this.filteredData =
+            !queryValue && !queryParam
+              ? this.data
+              : this.data.filter(
+                  (task) => String(task[queryParam]) === queryValue
+                );
+          this.listUI(this.filteredData);
+
+          const filterTypes = this.filterTypes.map((filter) => {
+            filter.active =
+              String(filter.queryParam) === String(queryParam) &&
+              String(filter.queryValue) === String(queryValue);
+            return filter;
+          });
+
+          this.filterUI(filterTypes);
+          this.filterTypes = filterTypes;
+        }
+
+        toggleStatus(e, id = null) {
+          const taskId = id ? id : Number(e.target.getAttribute("data-id"));
+          const updatedData = this.data.map((task) => {
+            if (task.id === taskId) task.completed = !task.completed;
+            return task;
+          });
+
+          this.listUI(updatedData);
+          this.data = updatedData;
+          this.onStatusChanged(taskId);
+          this.filterData();
+        }
+
+        deleteTask(e, id = null) {
+          const taskId = id ? id : Number(e.target.getAttribute("data-id"));
+          const updatedData = this.data.filter((task) => task.id !== taskId);
+
+          this.listUI(updatedData);
+          this.data = updatedData;
+          this.onDeleted(taskId);
+          this.updateCount();
+          this.filterData();
+        }
+
+        generalUI() {
+          this.nodes.app = this.elementCreator({
+            attributes: {
+              class: "app",
+            },
+          });
+
+          this.nodes.header = this.elementCreator({
+            attributes: {
+              class: "task-header",
+            },
+            container: this.nodes.app,
+          });
+
+          this.nodes.title = this.elementCreator({
+            type: "h1",
+            markup: this.title,
+            attributes: {
+              class: "task-header-title",
+            },
+            container: this.nodes.header,
+          });
+
+          this.nodes.list = this.elementCreator({
+            attributes: {
+              class: "task-list",
+            },
+            container: this.nodes.app,
+          });
+
+          this.nodes.tools = this.elementCreator({
+            attributes: {
+              class: "task-tools",
+            },
+            container: this.nodes.header,
+          });
+
+          this.nodes.form = this.elementCreator({
+            type: "form",
+            attributes: {
+              class: "task-form",
+            },
+            events: {
+              submit: { action: (e) => e.preventDefault(), api: true },
+            },
+            container: this.nodes.header,
+          });
+
+          this.nodes.count = this.elementCreator({
+            markup:
+              this.count > 1 ? `${this.count} tasks` : `${this.count} task`,
+            attributes: {
+              class: "task-count",
+            },
+            container: this.nodes.tools,
+          });
+
+          this.nodes.filters = this.elementCreator({
+            attributes: {
+              class: "task-filters",
+            },
+            container: this.nodes.tools,
+          });
+        }
+
+        formUI() {
+          this.nodes.input = this.elementCreator({
+            type: "input",
+            attributes: {
+              class: "task-input",
+              placeholder: "Add a new task...",
+              autofocus: "true",
+            },
+            container: this.nodes.form,
+          });
+
+          this.nodes.button = this.elementCreator({
+            type: "button",
+            markup: "Add Task",
+            attributes: {
+              class: "task-button",
+            },
+            events: {
+              click: { action: this.addTask, api: false },
+            },
+            container: this.nodes.form,
+          });
+        }
+
+        filterUI(filterTypes = this.filterTypes) {
+          document.startViewTransition(() => {
+            this.nodes.filters.innerHTML = "";
+
+            filterTypes.forEach((type) => {
+              const button = this.elementCreator({
+                type: "button",
+                markup: type.name,
+                attributes: {
+                  class: `task-filter${type.active ? " is-active" : ""}`,
+                  "data-param":
+                    type.queryParam !== undefined ? type.queryParam : null,
+                  "data-value":
+                    type.queryValue !== undefined ? type.queryValue : null,
+                },
+                events: {
+                  click: { action: this.filterData, api: true },
+                },
+                container: this.nodes.filters,
+              });
+            });
+          });
+        }
+
+        listUI(data = this.data) {
+          document.startViewTransition(() => {
+            this.nodes.list.innerHTML = "";
+
+            if (data.length === 0) {
+              this.emptyListUI();
+              return;
+            }
+
+            data.forEach((task) => {
+              const item = this.elementCreator({
+                attributes: {
+                  class: `task-item${task.completed ? " is-completed" : ""}`,
+                },
+                container: this.nodes.list,
+              });
+
+              const checkbox = this.elementCreator({
+                type: "input",
+                attributes: {
+                  class: "task-status",
+                  type: "checkbox",
+                  checked: task.completed ? task.completed : null,
+                  "data-id": task.id,
+                },
+                events: {
+                  change: { action: this.toggleStatus, api: true },
+                },
+                container: item,
+              });
+
+              const name = this.elementCreator({
+                type: "label",
+                markup: task.name,
+                attributes: {
+                  class: "task-name",
+                },
+                container: item,
+              });
+
+              const button = this.elementCreator({
+                type: "button",
+                markup: "",
+                attributes: {
+                  class: "task-delete",
+                  "data-id": task.id,
+                },
+                events: {
+                  click: { action: this.deleteTask, api: true },
+                },
+                container: item,
+              });
+            });
+          });
+        }
+
+        init() {
+          this.generalUI();
+          this.formUI();
+          this.listUI();
+          this.filterUI();
+        }
+      }
+
+      const todoList = [];
+
+      const todoList2 = [];
+
+      const TodoApp = new Todo({
+        title: "Patrycja <3",
+        data: todoList,
+      });
+
+      const TodoApp2 = new Todo({
+        title: "Michał",
+        data: todoList2,
+      });
+
+      TodoApp.init();
+      TodoApp2.init();
+
+      // Please open the console to see changes
+      TodoApp.onAdded = (task) => console.log("Added", task);
+      TodoApp.onDeleted = (id) => console.log("Deleted, id: ", id);
+      TodoApp.onStatusChanged = (id) => console.log("Status changed, id:", id);
+
+      // Add Task
+      TodoApp.addTask({ id: -6 });
+
+      // Delete Task
+      TodoApp.deleteTask(null, -6);
+
+      // Toggle Status
+      TodoApp.toggleStatus(null, -5);
+
+      // Filter Data
+      // TodoApp.filterData(null, "completed", "true");
+    </script>
+  </head>
+  <body></body>
+</html>
