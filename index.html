@@ -21,7 +21,8 @@
   </div>
 <script>
 var myIndex = 0;
-var container = document.getElementsByClassName("container")[0];
+function init() {
+  var container = document.getElementsByClassName("container")[0];
 for (let i = 1; i < 451; i++) {
   var img = document.createElement("img");
   var j = i;
@@ -34,9 +35,15 @@ for (let i = 1; i < 451; i++) {
   } 
   img.src = "mini/PatrycjaMichal_"+j+".JPG";
   img.classList = "mySlides";
+  img.style.display = "none";
   container.appendChild(img);
+
 }
-carousel(1, Math.floor(Math.random() * 450) + 1)
+  carousel(1, Math.floor(Math.random() * 450) + 1)
+
+}
+
+
 
 function carousel(old, newPhoto) {
   var i;
@@ -47,6 +54,7 @@ function carousel(old, newPhoto) {
     carousel(newPhoto, Math.floor(Math.random() * 450) + 1);
   }, 3000); // Change image every 2 seconds
 }
+init();
 </script>
 
 </body>
