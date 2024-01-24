@@ -286,6 +286,9 @@ var Todo = /*#__PURE__*/function () {
         config.attributes[a] !== null && elementNode.setAttribute(a, config.attributes[a]);
       });
       elementNode.innerHTML = config.markup;
+      console.log('Config', config);
+      console.log('ElementNote', elementNode);
+      console.log('Config Container', config.container);
       config.container.append(elementNode);
       Object.keys(config.events).forEach(function (e) {
         _this.eventBinder(elementNode, e, config.events[e].action, config.events[e].api);
